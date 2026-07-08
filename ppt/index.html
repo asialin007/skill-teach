@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人人都会写Skill - 内部分享</title>
+<link rel="stylesheet" href="https://cdn.hugeicons.com/font/hgi-stroke-rounded.css">
+<style>
+  :root{
+    --vip-pink:#EC008C;
+    --vip-hot:#F61679;
+    --vip-soft:#FCE7F3;
+    --ink:#000000;
+    --text:#494949;
+    --muted:#8B8B8B;
+    --line:#E7E6E6;
+    --panel:#F7F7F8;
+    --paper:#FFFFFF;
+    --danger:#FF0000;
+    --purple:#9C98C9;
+    --font:"PingFang SC","Microsoft YaHei UI","Noto Sans SC","Helvetica Neue",Arial,sans-serif;
+    --mono:"SFMono-Regular","Cascadia Mono","Menlo","Consolas",monospace;
+    --page-pad-x:4.2vw;
+    --page-pad-y:4.2vh;
+    --nav-safe:11vh;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{font-size:16px}
+
+  #deck{position:fixed;inset:0;width:10000vw;height:100vh;display:flex;flex-wrap:nowrap;transition:transform .62s cubic-bezier(.22,.61,.36,1);will-change:transform}
+  .slide{position:relative;width:100vw;height:100vh;flex:0 0 100vw;padding:var(--page-pad-y) var(--page-pad-x) var(--nav-safe) var(--page-pad-x);background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+  .slide::before{content:"";position:absolute;left:0;top:4.8vh;width:.58vw;min-width:7px;height:6.6vh;background:var(--vip-pink)}
+
+  .slide-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:2vw;min-height:8.4vh;margin-bottom:2.2vh}
+  .slide-title{font-size:clamp(26px,3.2vw,46px);line-height:1.1;font-weight:600;letter-spacing:0;color:var(--ink)}
+  .slide-kicker{font-size:12px;line-height:1.2;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-family:var(--mono);margin-bottom:.8vh}
+  .slide-meta{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);white-space:nowrap;padding-top:.8vh;text-align:right}
+  .content{flex:1;min-height:0;position:relative}
+  .footnote{position:absolute;left:var(--page-pad-x);right:var(--page-pad-x);bottom:5.8vh;display:flex;justify-content:space-between;gap:2vw;font-size:12px;color:var(--muted);font-family:var(--mono);letter-spacing:.04em;pointer-events:none}
+
+  .cover{justify-content:center;padding-bottom:9vh}
+  .cover::before{top:calc(50% - 23vh);transform:none;height:18vh;width:.72vw}
+  .cover-title{font-size:clamp(64px,8.8vw,132px);font-weight:600;line-height:1;letter-spacing:0;color:var(--ink)}
+  .cover-subtitle{font-size:clamp(28px,4vw,58px);font-weight:300;line-height:1.12;color:var(--vip-pink);margin-top:2.8vh}
+  .cover-meta{font-family:var(--mono);font-size:13px;letter-spacing:.12em;color:var(--muted);margin-top:5vh}
+  .cover-info{display:flex;gap:3vw;align-items:flex-start;margin-top:3vh;color:var(--text);font-size:clamp(14px,1.08vw,18px);line-height:1.45}
+  .cover-info span{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.35vh}
+
+  .onboarding-layout{display:grid;grid-template-columns:1.18fr .82fr;gap:1.6vw;height:100%;min-height:0;align-items:stretch}
+  .onboarding-shot-main{border:1px solid var(--line);background:#fff;overflow:hidden;min-height:0;display:grid;place-items:center}
+  .onboarding-shot-main img{width:100%;height:100%;object-fit:contain;object-position:top center;display:block}
+  .onboarding-side{display:grid;grid-template-rows:1fr auto;gap:1.1vh;min-height:0}
+  .onboarding-shot-sub{border:1px solid var(--line);background:#fff;overflow:hidden;min-height:0;display:grid;place-items:center}
+  .onboarding-shot-sub img{width:100%;height:100%;object-fit:contain;object-position:top center;display:block}
+  .onboarding-story{display:grid;grid-template-rows:auto repeat(3,auto);gap:.85vh;min-height:0}
+  .onboarding-lead{border-top:5px solid var(--vip-pink);background:var(--panel);padding:1.25vh 1vw}
+  .onboarding-title{font-size:clamp(20px,1.65vw,29px);line-height:1.18;font-weight:700;color:var(--ink);margin:.55vh 0}
+  .onboarding-body{font-size:clamp(12px,.92vw,15px);line-height:1.45;color:var(--text)}
+  .onboarding-card{border:1px solid var(--line);border-left:5px solid var(--vip-pink);background:#fff;padding:.95vh .9vw;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.75vw;align-items:start}
+  .onboarding-card .icon-badge{width:34px;height:34px;margin-bottom:0}
+  .onboarding-card .icon-badge i{font-size:19px}
+  .onboarding-card-title{font-size:clamp(14px,1.05vw,18px);font-weight:700;line-height:1.2;color:var(--ink);margin-bottom:.25vh}
+  .onboarding-card-body{font-size:clamp(11px,.82vw,14px);line-height:1.35;color:var(--text)}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:3vw;height:100%;min-height:0}
+  .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2.4vw;height:100%;min-height:0}
+  .grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.8vw;height:100%;min-height:0}
+  .grid-2-3{display:grid;grid-template-columns:2fr 3fr;gap:3vw;height:100%;min-height:0}
+  .grid-3-2{display:grid;grid-template-columns:3fr 2fr;gap:3vw;height:100%;min-height:0}
+  .stack{display:flex;flex-direction:column;gap:1.5vh;min-height:0}
+  .center{display:grid;place-items:center;text-align:center}
+  .align-start{align-items:start}
+
+  .panel{background:var(--panel);border:1px solid var(--line);padding:2.1vh 1.5vw;min-width:0}
+  .panel-title{font-size:clamp(18px,1.55vw,25px);font-weight:600;line-height:1.25;color:var(--ink);margin-bottom:1.2vh}
+  .panel-title.pink{color:var(--vip-pink)}
+  .panel-body{font-size:clamp(13px,1vw,17px);line-height:1.55;color:var(--text)}
+  .panel-body strong{color:var(--ink);font-weight:600}
+  .panel-body ul{padding-left:1.1em}
+  .panel-body li{margin:.35vh 0}
+  .icon-badge{width:42px;height:42px;display:inline-grid;place-items:center;background:var(--vip-soft);color:var(--vip-pink);border:1px solid rgba(236,0,140,.2);margin-bottom:1.1vh}
+  .icon-badge i{font-size:23px;line-height:1}
+  .icon-row{display:flex;align-items:center;gap:.8vw}
+  .icon-card{background:var(--paper);border:1px solid var(--line);padding:1.9vh 1.3vw;display:flex;flex-direction:column;gap:.85vh;min-height:0}
+  .icon-card .icon-badge{margin-bottom:.2vh}
+  .icon-card-title{font-size:clamp(17px,1.28vw,22px);font-weight:600;color:var(--ink);line-height:1.25}
+  .icon-card-body{font-size:clamp(12px,.92vw,15px);line-height:1.48;color:var(--text)}
+  .label{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;background:var(--ink);color:var(--paper);font-size:13px;font-weight:600;line-height:1.2}
+  .label.pink{background:var(--vip-pink)}
+  .label.gray{background:var(--text)}
+  .tag{display:inline-flex;align-items:center;border:1px solid var(--line);padding:5px 9px;font-size:12px;color:var(--text);background:var(--paper)}
+
+  .phone-row{display:flex;align-items:flex-start;justify-content:center;gap:1.7vw;min-height:0;height:100%}
+  .phone-shot{height:100%;max-height:70vh;aspect-ratio:390/844;background:#fff;border:1px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .phone-shot.sm{max-height:57vh}
+  .phone-shot.lg{max-height:74vh}
+  .phone-shot img{width:100%;height:100%;object-fit:contain;object-position:top center;display:block}
+  .image-frame{width:100%;height:100%;min-height:0;border:1px solid var(--line);background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .image-frame img{width:100%;height:100%;object-fit:cover;display:block}
+  .image-frame.fit-contain img{object-fit:contain;object-position:center center}
+  .image-frame.r-16x9{aspect-ratio:16/9;height:auto;max-height:68vh}
+  .image-frame.r-4x3{aspect-ratio:4/3;height:auto;max-height:68vh}
+  .image-frame.compare-shot{height:auto;aspect-ratio:16/10;max-height:34vh}
+  .visual-hero{display:grid;grid-template-columns:1fr;gap:1vh;align-content:start}
+  .visual-hero .image-frame{height:auto;aspect-ratio:16/9;max-height:44vh}
+  .visual-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1vw}
+  .visual-strip .icon-card{min-height:15vh}
+  .caption{font-size:12px;line-height:1.45;color:var(--muted);margin-top:.8vh}
+
+  .touch-card{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:1.2vh;min-height:0}
+  .touch-title{font-size:clamp(18px,1.5vw,24px);font-weight:600;color:var(--ink);line-height:1.25}
+  .io-box{background:var(--panel);border-top:4px solid var(--vip-pink);padding:1.4vh 1.1vw;font-size:clamp(12px,.92vw,15px);line-height:1.48;color:var(--text)}
+  .io-box .io-head{font-weight:600;color:var(--ink);margin:.4vh 0 .25vh}
+  .compare-label{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:0 10px;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-bottom:1vh}
+  .compare-label.after,.compare-label.recommend{background:var(--vip-pink)}
+  .compare-card{display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:.75vh;min-height:0}
+  .compare-copy{border:1px solid var(--line);background:var(--paper);padding:1vh .85vw;font-size:clamp(11px,.82vw,14px);line-height:1.38;color:var(--text);overflow:hidden}
+  .compare-copy .io-head{font-weight:600;color:var(--ink);margin:.28vh 0 .18vh}
+  .pros-cons{display:grid;grid-template-columns:1fr;gap:.8vh;margin-top:.9vh}
+  .pros,.cons{border:1px solid var(--line);background:var(--paper);padding:.9vh .78vw;font-size:clamp(11px,.78vw,13px);line-height:1.34;color:var(--text)}
+  .pros{border-top:4px solid var(--vip-pink)}
+  .cons{border-top:4px solid var(--muted)}
+  .pros-title,.cons-title{font-weight:600;color:var(--ink);margin-bottom:.32vh}
+  .pros ul,.cons ul{padding-left:1.1em}
+  .pros li,.cons li{margin:.16vh 0}
+  .recommend-tag{display:inline-flex;align-items:center;width:max-content;min-height:22px;padding:0 8px;background:var(--vip-soft);border:1px solid rgba(236,0,140,.22);color:var(--vip-pink);font-size:11px;font-weight:600;margin-top:.55vh}
+  .create-card{display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:1.15vh;min-height:0}
+  .create-head{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:.65vh}
+  .create-head .icon-badge{width:46px;height:46px;margin-bottom:0}
+  .create-head .icon-badge i{font-size:25px}
+  .create-card .compare-label{margin-bottom:0;min-height:30px;font-size:clamp(12px,.86vw,14px);gap:.45em}
+  .create-card .compare-label .tag-note{font-family:var(--font);font-weight:600;letter-spacing:0;text-transform:none}
+  .create-card .touch-title{font-size:clamp(22px,1.75vw,30px)}
+  .create-card .compare-copy{font-size:clamp(14px,1.05vw,18px);line-height:1.5;padding:1.45vh 1.1vw}
+  .create-card .compare-copy .io-head{font-size:clamp(15px,1.08vw,19px);margin:.2vh 0 .35vh}
+  .create-card .pros-cons{gap:.7vh;margin-top:1.2vh}
+  .create-card .pros,.create-card .cons{border:0;border-left:4px solid var(--vip-pink);background:transparent;padding:.55vh 0 .55vh .85vw;font-size:clamp(13px,.98vw,16px);line-height:1.45}
+  .create-card .cons{border-left-color:var(--muted)}
+  .create-card .pros-title,.create-card .cons-title{font-size:clamp(14px,1.02vw,17px);margin-bottom:.22vh}
+
+  .flow-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(16vh,auto);gap:1.6vh 1.4vw}
+  .flow-node{border:1px solid var(--line);background:#fff;padding:1.6vh 1.2vw;position:relative;min-height:0}
+  .flow-node::before{content:"";position:absolute;left:0;top:0;width:100%;height:4px;background:var(--vip-pink)}
+  .flow-node.purple::before{background:var(--purple)}
+  .flow-node .icon-badge{width:34px;height:34px;margin-bottom:.9vh}
+  .flow-node .icon-badge i{font-size:19px}
+  .flow-node-title{font-size:clamp(16px,1.28vw,21px);font-weight:600;margin-bottom:.9vh;color:var(--ink)}
+  .flow-node-body{font-size:clamp(12px,.9vw,15px);line-height:1.45;color:var(--text)}
+
+  .matrix{display:grid;grid-template-columns:1.1fr 1.4fr 1.4fr;gap:0;border:1px solid var(--line);height:100%;overflow:hidden}
+  .matrix > div{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.3vh 1vw;font-size:clamp(12px,.92vw,15px);line-height:1.45;color:var(--text)}
+  .matrix > div:nth-child(3n){border-right:0}
+  .matrix-head{background:var(--ink);color:#fff!important;font-weight:600}
+  .matrix-key{background:var(--panel);font-weight:600;color:var(--ink)!important}
+
+  .code-block{height:100%;max-height:54vh;overflow:hidden;background:#2f2f31;color:#fff;padding:1.7vh 1.2vw;font-family:var(--mono);font-size:clamp(10px,.78vw,13px);line-height:1.45;white-space:pre-wrap}
+  .callout{border-left:5px solid var(--vip-pink);background:var(--panel);padding:1.8vh 1.4vw;color:var(--text);font-size:clamp(14px,1.06vw,18px);line-height:1.55}
+  .note-red{color:var(--danger);font-weight:600}
+
+  .plan-table{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:0;border:1px solid var(--line);align-self:start}
+  .plan-table > div{padding:1.3vh 1vw;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:clamp(13px,1vw,16px);line-height:1.4;color:var(--text)}
+  .plan-table > div:nth-child(3n){border-right:0}
+  .plan-table .head{background:var(--ink);color:#fff;font-weight:600}
+
+  [data-anim]{opacity:0;transform:translateY(14px)}
+  body.no-motion [data-anim]{opacity:1!important;transform:none!important}
+
+  #nav{position:fixed;left:50%;bottom:2.35vh;transform:translateX(-50%);z-index:30;display:flex;gap:8px;padding:7px 12px;background:rgba(255,255,255,.82);border:1px solid var(--line);backdrop-filter:blur(8px)}
+  #nav button{width:8px;height:8px;border:0;background:#C9C9C9;cursor:pointer;padding:0}
+  #nav button.active{width:24px;background:var(--vip-pink)}
+  #hint{position:fixed;left:2.5vw;bottom:2.45vh;z-index:31;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);background:rgba(255,255,255,.82);border:1px solid var(--line);padding:6px 8px;backdrop-filter:blur(8px)}
+  #index{position:fixed;inset:0;z-index:40;background:rgba(255,255,255,.96);display:none;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;padding:34px;overflow:auto}
+  #index.show{display:grid}
+  #index .thumb{border:1px solid var(--line);background:#fff;aspect-ratio:16/9;overflow:hidden;position:relative;cursor:pointer}
+  #index .thumb .mini{transform:scale(.18);transform-origin:top left;width:555.55%;height:555.55%;pointer-events:none}
+  #index .thumb [data-anim]{opacity:1!important;transform:none!important}
+
+  @media (max-width: 820px){
+    :root{--page-pad-x:5.5vw;--page-pad-y:4vh}
+    .slide-head{grid-template-columns:1fr;gap:.8vh;min-height:auto}
+    .slide-meta{text-align:left}
+    .grid-2,.grid-3,.grid-4,.grid-2-3,.grid-3-2,.judgement-grid{grid-template-columns:1fr;height:auto;overflow:auto}
+    .phone-row{height:auto;overflow:auto}
+    .phone-shot{max-height:56vh}
+    .flow-grid{grid-template-columns:1fr}
+    .matrix{height:auto}
+    .cover-title{font-size:17vw}
+    .cover-subtitle{font-size:9vw}
+  }
+
+  .context-page{display:grid;grid-template-rows:auto minmax(0,1fr);gap:1.7vh;height:100%;min-height:0}
+  .context-hero{display:grid;grid-template-columns:1fr;gap:1.8vw;align-items:stretch}
+  .context-statement{border-top:5px solid var(--vip-pink);background:var(--panel);padding:1.8vh 1.35vw}
+  .context-statement .label{display:flex;width:max-content;margin-bottom:1.2vh}
+  .context-statement .panel-title{margin-bottom:.8vh}
+  .metric-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.2vw;height:100%;min-height:0}
+  .metric-card{border:1px solid var(--line);background:var(--paper);padding:1.55vh 1.15vw;min-height:0;display:grid;grid-template-rows:auto auto auto 1fr;align-content:start}
+  .metric-step{display:flex;align-items:center;justify-content:space-between;gap:1vw;margin-bottom:2.05vh}
+  .metric-step .icon-badge{width:38px;height:38px;margin-bottom:0}
+  .metric-step .icon-badge i{font-size:21px}
+  .metric-index{font-family:var(--mono);font-size:clamp(30px,3.1vw,48px);line-height:.9;letter-spacing:0;color:var(--vip-pink);font-weight:700}
+  .metric-num{font-size:clamp(18px,1.45vw,24px);line-height:1.18;color:var(--ink);font-weight:700}
+  .metric-label{font-size:clamp(12px,.9vw,15px);line-height:1.45;color:var(--text);margin-top:1.1vh}
+  .metric-detail{align-self:end;border-top:1px solid var(--line);padding-top:1.1vh;margin-top:1.4vh;font-size:clamp(11px,.82vw,13px);line-height:1.38;color:var(--text)}
+  .metric-detail strong{display:block;color:var(--ink);font-size:clamp(12px,.9vw,14px);margin-bottom:.35vh}
+  .impact-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1vw}
+  .impact-card{border-left:4px solid var(--vip-pink);background:var(--panel);padding:1.25vh 1vw;min-height:9vh}
+  .impact-title{font-size:clamp(14px,1.05vw,18px);font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:.45vh}
+  .impact-body{font-size:clamp(12px,.86vw,14px);line-height:1.38;color:var(--text)}
+  .skillable-layout{display:grid;grid-template-rows:minmax(0,1.28fr) minmax(0,.72fr);gap:1.45vh;height:100%;min-height:0}
+  .skillable-criteria{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.4vw;min-height:0}
+  .skillable-card{border:1px solid var(--line);border-top:5px solid var(--vip-pink);background:#fff;padding:2.1vh 1.25vw;min-height:0;display:flex;flex-direction:column;justify-content:center}
+  .skillable-top{display:flex;align-items:center;justify-content:space-between;gap:1vw;margin-bottom:2.05vh}
+  .skillable-icon{width:42px;height:42px;display:grid;place-items:center;background:var(--vip-soft);color:var(--vip-pink);border:1px solid rgba(236,0,140,.2)}
+  .skillable-icon i{font-size:24px;line-height:1}
+  .skillable-num{font-family:var(--mono);font-size:clamp(34px,3.8vw,58px);line-height:.9;letter-spacing:0;color:var(--vip-pink);font-weight:700}
+  .skillable-title{font-size:clamp(22px,1.8vw,30px);line-height:1.18;color:var(--ink);font-weight:700;margin-bottom:1vh}
+  .skillable-body{font-size:clamp(13px,1vw,17px);line-height:1.5;color:var(--text)}
+  .example-wrap{border-top:1px solid var(--line);padding-top:1.15vh;min-height:0}
+  .example-title{font-size:clamp(15px,1.16vw,20px);font-weight:700;color:var(--ink);line-height:1.15;margin-bottom:.85vh}
+  .example-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:.75vw;height:calc(100% - 3vh);min-height:0}
+  .example-card{background:var(--panel);border-left:5px solid var(--vip-pink);padding:1vh 1vw;min-height:0;display:flex;flex-direction:column;justify-content:center}
+  .example-name{font-size:clamp(17px,1.28vw,22px);font-weight:700;color:var(--ink);line-height:1.25;margin-bottom:.65vh}
+  .example-desc{font-size:clamp(13px,.98vw,16px);line-height:1.45;color:var(--text)}
+  .principle-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2vh 1.2vw}
+  .principle-item{border-left:4px solid var(--vip-pink);background:var(--panel);padding:1.4vh 1vw;color:var(--text);font-size:clamp(13px,1vw,16px);line-height:1.5}
+  .principle-item strong{display:block;color:var(--ink);font-size:clamp(15px,1.15vw,19px);margin-bottom:.45vh}
+  .judgement-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:1vw;height:100%;min-height:0}
+  .judgement-card{border:1px solid var(--line);border-top:5px solid var(--vip-pink);background:#fff;padding:1.45vh 1.05vw;display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0}
+  .judgement-card:nth-child(-n+3){grid-column:span 2}
+  .judgement-card:nth-child(n+4){grid-column:span 3}
+  .judgement-top{display:flex;align-items:center;justify-content:space-between;gap:.75vw;margin-bottom:1.05vh}
+  .judgement-icon{width:38px;height:38px;display:grid;place-items:center;background:var(--vip-soft);color:var(--vip-pink);border:1px solid rgba(236,0,140,.2);flex:0 0 auto}
+  .judgement-icon i{font-size:21px;line-height:1}
+  .judgement-step{font-family:var(--mono);font-size:clamp(30px,3vw,46px);line-height:.9;letter-spacing:0;color:var(--vip-pink);font-weight:700}
+  .judgement-title{font-size:clamp(19px,1.45vw,25px);font-weight:700;color:var(--ink);line-height:1.18;margin-bottom:0}
+  .judgement-body{font-size:clamp(12px,.9vw,15px);line-height:1.5;color:var(--text);align-self:start;padding-top:2.2vh}
+  .judgement-body strong{display:block;color:var(--ink);font-size:clamp(13px,.95vw,16px);margin:.95vh 0 .25vh}
+  .skill-map{display:grid;grid-template-columns:1.1fr .8fr 1.1fr;gap:1.6vw;align-items:stretch;height:100%}
+  .map-column{display:flex;flex-direction:column;gap:1.2vh;justify-content:center}
+  .map-node{border:1px solid var(--line);background:var(--paper);padding:1.5vh 1vw}
+  .map-node.hot{border-top:5px solid var(--vip-pink);background:var(--vip-soft)}
+  .map-title{font-size:clamp(16px,1.2vw,21px);font-weight:600;color:var(--ink);line-height:1.25;margin-bottom:.6vh}
+  .map-body{font-size:clamp(12px,.9vw,15px);line-height:1.45;color:var(--text)}
+  .map-arrow{display:grid;place-items:center;font-family:var(--mono);color:var(--vip-pink);font-weight:700;font-size:clamp(20px,2.2vw,36px)}
+  .package-layout{display:grid;grid-template-rows:auto minmax(0,1fr);gap:1.6vh;height:100%;min-height:0}
+  .package-lead{display:grid;grid-template-columns:1fr;gap:1.4vw;align-items:stretch}
+  .package-core{border-top:5px solid var(--vip-pink);background:var(--panel);padding:1.55vh 1.25vw}
+  .package-core-title{font-size:clamp(20px,1.6vw,28px);font-weight:700;color:var(--ink);line-height:1.18;margin:.65vh 0}
+  .package-core-body{font-size:clamp(13px,.98vw,16px);line-height:1.48;color:var(--text)}
+  .package-grid{display:grid;grid-template-columns:.9fr 3.1fr;gap:1vw;min-height:0}
+  .package-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:1vw;min-height:0}
+  .package-tree{border:1px solid var(--line);background:#fff;padding:1.45vh .95vw;display:flex;flex-direction:column;justify-content:center}
+  .tree-line{font-family:var(--mono);font-size:clamp(15px,1.1vw,20px);line-height:1.55;color:var(--text);white-space:pre}
+  .tree-line strong{color:var(--vip-pink);font-weight:700}
+  .package-card{border:1px solid var(--line);background:#fff;padding:1.45vh .95vw;display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0}
+  .package-card.hot{border-top:5px solid var(--vip-pink)}
+  .package-card-title{font-size:clamp(17px,1.18vw,22px);font-weight:700;color:var(--ink);line-height:1.18;margin-bottom:.6vh}
+  .package-card-body{font-size:clamp(11px,.82vw,14px);line-height:1.42;color:var(--text)}
+  .package-card-list{border-top:1px solid var(--line);margin-top:1.05vh;padding-top:.9vh;font-size:clamp(10px,.76vw,12px);line-height:1.45;color:var(--text)}
+  .skillmd-layout{display:grid;grid-template-columns:1.45fr .95fr;gap:1.6vw;height:100%;min-height:0;align-items:stretch}
+  .skillmd-shot{position:relative;border:1px solid var(--line);background:var(--panel);overflow:hidden;min-height:0;display:grid;place-items:center}
+  .skillmd-shot img{width:100%;height:100%;object-fit:contain;display:block}
+  .shot-marker{position:absolute;width:30px;height:30px;display:grid;place-items:center;background:var(--vip-pink);color:#fff;border:2px solid #fff;font-family:var(--mono);font-size:13px;font-weight:700;box-shadow:0 4px 12px rgba(236,0,140,.28)}
+  .shot-marker.m1{left:11%;top:9%}
+  .shot-marker.m2{left:11%;top:13.8%}
+  .shot-marker.m3{left:4.5%;top:36%}
+  .skillmd-notes{display:grid;grid-template-rows:repeat(3,minmax(0,1fr));gap:1vh;min-height:0}
+  .skillmd-note{border:1px solid var(--line);border-left:5px solid var(--vip-pink);background:#fff;padding:1.25vh 1vw;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.75vw;align-items:start;min-height:0}
+  .skillmd-note-num{width:28px;height:28px;display:grid;place-items:center;background:var(--vip-pink);color:#fff;font-family:var(--mono);font-size:12px;font-weight:700}
+  .skillmd-note-title{font-size:clamp(16px,1.2vw,21px);font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:.45vh}
+  .skillmd-note-body{font-size:clamp(11px,.85vw,14px);line-height:1.42;color:var(--text)}
+  .disclosure-layout{display:grid;grid-template-columns:1.45fr .95fr;gap:1.6vw;height:100%;min-height:0;align-items:stretch}
+  .disclosure-shot{position:relative;border:1px solid var(--line);background:var(--panel);overflow:hidden;min-height:0;display:grid;place-items:center}
+  .disclosure-shot img{width:100%;height:100%;object-fit:contain;display:block}
+  .resource-box{position:absolute;border:4px solid var(--vip-pink);background:rgba(236,0,140,.04);box-shadow:0 0 0 2px rgba(255,255,255,.85)}
+  .resource-box.refs{left:1.7%;top:7.4%;width:15.2%;height:12.8%}
+  .resource-box.table{left:27.8%;top:46.6%;width:62.8%;height:22%}
+  .resource-label{position:absolute;left:52%;top:43.5%;transform:translateX(-50%);background:var(--vip-pink);color:#fff;padding:.65vh 1vw;font-size:clamp(13px,1vw,17px);font-weight:700;letter-spacing:.02em;box-shadow:0 4px 14px rgba(236,0,140,.26)}
+  .resource-label::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:2.9vh;background:var(--vip-pink)}
+  .disclosure-notes{display:grid;grid-template-rows:repeat(3,minmax(0,1fr));gap:1vh;min-height:0}
+  .disclosure-note{border:1px solid var(--line);border-left:5px solid var(--vip-pink);background:#fff;padding:1.35vh 1vw;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.8vw;align-items:start;min-height:0}
+  .disclosure-note .icon-badge{width:36px;height:36px;margin-bottom:0}
+  .disclosure-note .icon-badge i{font-size:20px}
+  .disclosure-note-title{font-size:clamp(17px,1.25vw,22px);font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:.55vh}
+  .disclosure-note-body{font-size:clamp(12px,.9vw,15px);line-height:1.45;color:var(--text)}
+  .quote-layout{display:grid;grid-template-rows:auto minmax(0,1fr);gap:1.25vh;height:100%;min-height:0}
+  .quote-hero{border-top:5px solid var(--vip-pink);background:var(--panel);padding:1.35vh 1.25vw;display:grid;grid-template-columns:1fr auto 1fr;gap:1vw;align-items:center}
+  .quote-hero-text{font-size:clamp(20px,1.65vw,30px);font-weight:700;line-height:1.2;color:var(--ink)}
+  .quote-hero-arrow{font-family:var(--mono);font-size:clamp(24px,2.5vw,42px);font-weight:700;color:var(--vip-pink)}
+  .quote-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4vw;height:100%;min-height:0}
+  .quote-card{border:1px solid var(--line);background:var(--panel);padding:1.7vh 1.2vw;display:flex;flex-direction:column;gap:1vh;min-height:0}
+  .quote-card.good{border-top:5px solid var(--vip-pink)}
+  .quote-card.bad{border-top:5px solid var(--muted)}
+  .mini-code{font-family:var(--mono);font-size:clamp(12px,.92vw,15px);line-height:1.55;background:#2f2f31;color:#fff;padding:1.4vh 1vw;white-space:pre-wrap;flex:1;min-height:0}
+  .close-line{font-size:clamp(28px,3.3vw,50px);line-height:1.18;font-weight:600;color:var(--ink)}
+  .close-line .pink{color:var(--vip-pink)}
+  .closing-layout{display:grid;grid-template-rows:auto minmax(0,1fr);gap:2vh;height:100%;min-height:0}
+  .closing-hero{border-top:5px solid var(--vip-pink);background:var(--panel);padding:2vh 1.6vw;display:grid;grid-template-columns:1.7fr 1fr;gap:2vw;align-items:center}
+  .closing-hero .close-line{font-size:clamp(26px,3vw,46px)}
+  .closing-note{font-size:clamp(13px,1vw,17px);line-height:1.5;color:var(--text);border-left:4px solid var(--vip-pink);padding-left:1vw}
+  .closing-body{display:grid;grid-template-rows:auto minmax(0,1fr);gap:1.4vh;min-height:0}
+  .closing-panel{display:flex;flex-direction:column;gap:1.2vh;min-height:0}
+  .closing-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.2vw;min-height:0}
+  .closing-card{border:1px solid var(--line);background:#fff;padding:1.5vh 1.1vw}
+  .closing-card-title{font-size:clamp(17px,1.25vw,22px);font-weight:700;color:var(--ink);line-height:1.25;margin-bottom:.7vh}
+  .closing-card-body{font-size:clamp(12px,.9vw,15px);line-height:1.45;color:var(--text)}
+  .timeline-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1vw;min-height:0}
+  .timeline-card{border:1px solid var(--line);background:#fff;padding:1.45vh 1vw;min-height:20vh;display:grid;grid-template-rows:auto auto minmax(0,1fr)}
+  .timeline-day{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--vip-pink);font-weight:700;margin-bottom:.85vh}
+  .timeline-title{font-size:clamp(16px,1.18vw,21px);font-weight:700;color:var(--ink);line-height:1.25;margin-bottom:.7vh}
+  .timeline-body{font-size:clamp(12px,.88vw,15px);line-height:1.45;color:var(--text)}
+  .homework-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr;gap:1vw;height:100%;min-height:0}
+  .homework-card{border:1px solid var(--line);border-top:5px solid var(--vip-pink);background:#fff;padding:1.05vh .85vw;display:grid;grid-template-rows:auto auto auto minmax(0,1fr);min-height:0}
+  .homework-index{font-family:var(--mono);font-size:clamp(14px,1.05vw,18px);letter-spacing:.08em;color:var(--vip-pink);font-weight:700;margin-bottom:.5vh}
+  .homework-title{font-size:clamp(15px,1.08vw,19px);font-weight:700;color:var(--ink);line-height:1.16;margin-bottom:.3vh}
+  .homework-skill{font-family:var(--mono);font-size:clamp(10px,.76vw,13px);line-height:1.2;color:var(--muted);margin-bottom:.55vh}
+  .homework-body{font-size:clamp(11px,.83vw,14px);line-height:1.3;color:var(--text);display:grid;gap:.38vh}
+  .homework-field{min-width:0}
+  .homework-label{display:block;color:var(--ink);font-size:clamp(12px,.9vw,15px);font-weight:700;line-height:1.15;margin-bottom:.08vh}
+  .homework-value{display:block;color:var(--text)}
+  .teaser-layout{display:grid;grid-template-columns:2.2fr .8fr;gap:1.8vw;height:100%;min-height:0;align-items:stretch}
+  .demo-frame{border:1px solid var(--line);border-top:5px solid var(--vip-pink);background:#fff;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+  .demo-frame-bar{min-height:34px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--line);background:var(--panel);font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .demo-dot{width:8px;height:8px;background:var(--vip-pink);display:inline-block}
+  .demo-frame iframe{width:100%;height:100%;border:0;display:block;background:#fff;min-height:0;flex:1}
+  .qr-panel{border:1px solid var(--line);border-top:5px solid var(--vip-pink);background:#fff;min-height:0;padding:2.4vh 1.4vw;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .qr-panel img{width:min(21vw,260px);height:auto;aspect-ratio:1/1;object-fit:contain;display:block}
+  .qr-title{font-size:clamp(24px,2.1vw,36px);font-weight:700;line-height:1.15;color:var(--ink);margin-top:2vh}
+  .qr-link{font-family:var(--mono);font-size:clamp(10px,.78vw,12px);line-height:1.35;color:var(--muted);margin-top:2vh;word-break:break-all}
+  .qr-knowledge{width:100%;text-align:left;margin-bottom:2.2vh;border-left:5px solid var(--vip-pink);padding-left:1vw}
+  .qr-knowledge-label{font-family:var(--mono);font-size:clamp(11px,.82vw,14px);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.8vh}
+  .qr-knowledge-list{display:grid;gap:.7vh}
+  .qr-knowledge-item{font-size:clamp(17px,1.35vw,24px);line-height:1.18;font-weight:700;color:var(--ink)}
+  .figma-preview{flex:1;min-height:0;background:#fff;display:grid;place-items:center;padding:3vh 2vw}
+  .figma-preview-card{width:min(720px,100%);border:1px solid var(--line);border-top:5px solid var(--vip-pink);background:var(--paper);padding:3vh 2vw}
+  .figma-plugin-tag{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;background:var(--ink);color:#fff;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;margin-bottom:2.2vh}
+  .figma-preview-title{font-size:clamp(32px,3.1vw,54px);font-weight:700;line-height:1.05;color:var(--ink);margin-bottom:1.3vh}
+  .figma-preview-body{font-size:clamp(15px,1.12vw,19px);line-height:1.5;color:var(--text);margin-bottom:2.4vh}
+  .figma-url{font-family:var(--mono);font-size:clamp(11px,.82vw,14px);line-height:1.45;color:var(--muted);word-break:break-all;border-top:1px solid var(--line);padding-top:1.2vh}
+  .figma-shot{flex:1;min-height:0;background:#fff;padding:1.4vh 1vw;display:flex;align-items:center;justify-content:center}
+  .figma-shot img{width:100%;height:100%;object-fit:contain;display:block}
+  .figma-panel{border:1px solid var(--line);border-top:5px solid var(--vip-pink);background:#fff;min-height:0;padding:3vh 1.6vw;display:flex;flex-direction:column;justify-content:center}
+  .figma-panel .icon-badge{width:54px;height:54px;margin-bottom:2vh}
+  .figma-panel .icon-badge i{font-size:29px}
+  .figma-panel-title{font-size:clamp(34px,3vw,54px);font-weight:700;line-height:1.08;color:var(--ink);margin-bottom:1.8vh}
+  .figma-panel-body{font-size:clamp(15px,1.15vw,20px);line-height:1.5;color:var(--text);border-left:5px solid var(--vip-pink);padding-left:1vw}
+</style>
+</head>
+<body>
+<main id="deck">
+<section class="slide cover" data-layout="V01">
+  <div data-anim>
+    <h1 class="cover-title">人人都会写Skill</h1>
+    <div class="cover-subtitle">内部分享</div>
+    <div class="cover-meta">VIPSHOP INTERNAL REPORT / 2026</div>
+    <div class="cover-info">
+      <div><span>Presenter</span>分享人：林亚洲</div>
+      <div><span>Date</span>2026.07.08</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-layout="V05">
+  <header class="slide-head">
+    <div><div class="slide-kicker">INTRO</div><h1 class="slide-title">从新员工资料库想到 Skill</h1></div>
+    <div class="slide-meta">02 / 13</div>
+  </header>
+  <div class="content onboarding-layout">
+    <div class="onboarding-shot-main fit-contain" data-anim>
+      <img src="images/02-onboarding-library-overview.png" alt="新员工 UED 资料库截图">
+    </div>
+    <div class="onboarding-side">
+      <div class="onboarding-shot-sub fit-contain" data-anim>
+        <img src="images/02-onboarding-library-sop.png" alt="项目智库和 SOP 截图">
+      </div>
+      <div class="onboarding-story" data-anim>
+        <div class="onboarding-lead">
+          <div class="onboarding-title">新人需要一份可导航的工作入口</div>
+          <div class="onboarding-body">资料库把常用网站、项目对接、SOP、工具软件和自查表集中起来，让新人知道从哪里开始、按什么规则推进。</div>
+        </div>
+        <div class="onboarding-card">
+          <span class="icon-badge"><i class="hgi-stroke hgi-link-04"></i></span>
+          <div><div class="onboarding-card-title">工具怎么用</div><div class="onboarding-card-body">常用系统、权限申请、平台入口一页可查。</div></div>
+        </div>
+        <div class="onboarding-card">
+          <span class="icon-badge"><i class="hgi-stroke hgi-workflow-circle-06"></i></span>
+          <div><div class="onboarding-card-title">项目怎么跟</div><div class="onboarding-card-body">项目智库、SOP 和对接方式帮新人少走弯路。</div></div>
+        </div>
+        <div class="onboarding-card">
+          <span class="icon-badge"><i class="hgi-stroke hgi-check-list"></i></span>
+          <div><div class="onboarding-card-title">标准在哪里</div><div class="onboarding-card-body">自查表、规范和模板让交付有共同标准。</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Onboarding To Skill</span></div>
+</section>
+
+<section class="slide" data-layout="V02">
+  <header class="slide-head">
+    <div><div class="slide-kicker">CONTEXT</div><h1 class="slide-title">什么是 Skill，为什么要用 Skill</h1></div>
+    <div class="slide-meta">03 / 13</div>
+  </header>
+  <div class="content context-page">
+    <div class="context-hero" data-anim>
+      <div class="context-statement">
+        <span class="label pink">简单类比</span>
+        <div class="panel-title">Skill 就像给 AI 配了一套“岗位说明书 + SOP + 工具箱 + 质检清单”</div>
+        <div class="panel-body">提示词告诉 AI 这次要做什么；Skill 告诉 AI 这类事以后都应该怎么稳定做好。</div>
+      </div>
+    </div>
+    <div class="metric-row" data-anim>
+      <div class="metric-card"><div class="metric-step"><span class="icon-badge"><i class="hgi-stroke hgi-user-id-verification"></i></span><span class="metric-index">01</span></div><div class="metric-num">岗位说明书</div><div class="metric-label">说明这个 Skill 负责哪类任务，什么时候该触发，什么时候不该用。</div><div class="metric-detail"><strong>对应</strong>name、description、适用 / 不适用范围。</div></div>
+      <div class="metric-card"><div class="metric-step"><span class="icon-badge"><i class="hgi-stroke hgi-workflow-circle-06"></i></span><span class="metric-index">02</span></div><div class="metric-num">SOP 流程</div><div class="metric-label">把专家经验拆成清晰步骤，让 AI 不用临场猜下一步怎么做。</div><div class="metric-detail"><strong>对应</strong>工作流、输入输出、执行顺序。</div></div>
+      <div class="metric-card"><div class="metric-step"><span class="icon-badge"><i class="hgi-stroke hgi-folder-01"></i></span><span class="metric-index">03</span></div><div class="metric-num">工具箱</div><div class="metric-label">把模板、规范、示例和脚本沉淀下来，下次遇到同类任务可以直接复用。</div><div class="metric-detail"><strong>对应</strong>references、assets、scripts。</div></div>
+      <div class="metric-card"><div class="metric-step"><span class="icon-badge"><i class="hgi-stroke hgi-task-done-01"></i></span><span class="metric-index">04</span></div><div class="metric-num">质检清单</div><div class="metric-label">明确什么算完成、怎么检查通过，让交付从“感觉可以”变成“确实达标”。</div><div class="metric-detail"><strong>对应</strong>验收标准、检查命令、失败回写。</div></div>
+    </div>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Skill Method</span></div>
+</section>
+
+<section class="slide" data-layout="V03">
+  <header class="slide-head">
+    <div><div class="slide-kicker">SCENARIO</div><h1 class="slide-title">什么事情可以变成一个 Skill？</h1></div>
+    <div class="slide-meta">04 / 13</div>
+  </header>
+  <div class="content skillable-layout">
+    <div class="skillable-criteria" data-anim>
+      <article class="skillable-card">
+        <div class="skillable-top"><span class="skillable-icon"><i class="hgi-stroke hgi-refresh"></i></span><div class="skillable-num">01</div></div>
+        <div class="skillable-title">可重复</div>
+        <div class="skillable-body">不是只做一次的临时需求，而是未来还会遇到同类问题，可以沉淀成稳定做法。</div>
+      </article>
+      <article class="skillable-card">
+        <div class="skillable-top"><span class="skillable-icon"><i class="hgi-stroke hgi-workflow-circle-06"></i></span><div class="skillable-num">02</div></div>
+        <div class="skillable-title">稳定流程</div>
+        <div class="skillable-body">已经有相对固定的工作流、步骤顺序和输入输出，AI 可以按流程执行，而不是每次重新猜。</div>
+      </article>
+      <article class="skillable-card">
+        <div class="skillable-top"><span class="skillable-icon"><i class="hgi-stroke hgi-folder-01"></i></span><div class="skillable-num">03</div></div>
+        <div class="skillable-title">有特定知识</div>
+        <div class="skillable-body">需要参考规范、模板、素材或者脚本，才能稳定做出符合场景要求的结果。</div>
+      </article>
+    </div>
+    <div class="example-wrap" data-anim>
+      <div class="example-title">适合沉淀的例子</div>
+      <div class="example-grid">
+        <div class="example-card"><div class="example-name">旅行计划</div><div class="example-desc">每次出行都要整理目的地、预算、交通、行程和注意事项。</div></div>
+        <div class="example-card"><div class="example-name">大促资源位</div><div class="example-desc">制作不同尺寸的大促资源位，统一活动主题、版式规则和输出规格。</div></div>
+        <div class="example-card"><div class="example-name">批量图标生成</div><div class="example-desc">批量生成规格、风格一致的图标，保证尺寸、线宽、圆角和命名统一。</div></div>
+        <div class="example-card"><div class="example-name">消息通知</div><div class="example-desc">反复写群通知、活动提醒、会议提醒，需要讲清时间、地点、动作和截止时间。</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Skill Scenario</span></div>
+</section>
+
+<section class="slide" data-layout="V03">
+  <header class="slide-head">
+    <div><div class="slide-kicker">STANDARD</div><h1 class="slide-title">优秀 Skill 的五大核心判断</h1></div>
+    <div class="slide-meta">05 / 13</div>
+  </header>
+  <div class="content judgement-grid">
+    <article class="judgement-card" data-anim>
+      <div class="judgement-top"><span class="judgement-icon"><i class="hgi-stroke hgi-target-02"></i></span><div class="judgement-step">01</div></div>
+      <div class="judgement-title">触发清楚</div>
+      <div class="judgement-body"><strong>看什么</strong>name 和 description 能让 AI 判断什么时候该用、什么时候不用。<strong>避免</strong>只写能力名，缺少适用场景。</div>
+    </article>
+    <article class="judgement-card" data-anim>
+      <div class="judgement-top"><span class="judgement-icon"><i class="hgi-stroke hgi-workflow-circle-06"></i></span><div class="judgement-step">02</div></div>
+      <div class="judgement-title">流程可执行</div>
+      <div class="judgement-body"><strong>看什么</strong>有明确步骤、输入、输出、命令或检查点。<strong>避免</strong>只讲原则，不告诉 AI 下一步怎么做。</div>
+    </article>
+    <article class="judgement-card" data-anim>
+      <div class="judgement-top"><span class="judgement-icon"><i class="hgi-stroke hgi-refresh"></i></span><div class="judgement-step">03</div></div>
+      <div class="judgement-title">能复用</div>
+      <div class="judgement-body"><strong>看什么</strong>模板、规范、示例和脚本能被下次任务继续使用。<strong>避免</strong>把一次性经验写成不可维护的长文。</div>
+    </article>
+    <article class="judgement-card" data-anim>
+      <div class="judgement-top"><span class="judgement-icon"><i class="hgi-stroke hgi-folder-01"></i></span><div class="judgement-step">04</div></div>
+      <div class="judgement-title">渐进式披露</div>
+      <div class="judgement-body"><strong>看什么</strong>主流程完整，补充资料按任务需要再打开。<strong>避免</strong>一开始读取所有 references，干扰判断重点。</div>
+    </article>
+    <article class="judgement-card" data-anim>
+      <div class="judgement-top"><span class="judgement-icon"><i class="hgi-stroke hgi-task-done-01"></i></span><div class="judgement-step">05</div></div>
+      <div class="judgement-title">有验收标准</div>
+      <div class="judgement-body"><strong>看什么</strong>明确什么算完成，以及如何检查通过。<strong>避免</strong>只要求“高质量”，但没有可验证证据。</div>
+    </article>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Quality Standard</span></div>
+</section>
+
+<section class="slide" data-layout="V07">
+  <header class="slide-head">
+    <div><div class="slide-kicker">STRUCTURE</div><h1 class="slide-title">一个 Skill 的推荐结构</h1></div>
+    <div class="slide-meta">06 / 13</div>
+  </header>
+  <div class="content package-layout">
+    <div class="package-lead" data-anim>
+      <div class="package-core">
+        <span class="label pink">核心文件</span>
+        <div class="package-core-title">SKILL.md 只放入口、流程和验收</div>
+        <div class="package-core-body">它负责让 AI 判断“什么时候用”、知道“怎么做”、明确“什么算完成”。</div>
+      </div>
+    </div>
+    <div class="package-grid" data-anim>
+      <div class="package-tree">
+        <div class="tree-line"><strong>my-skill/</strong>
+├─ SKILL.md
+├─ references/
+├─ assets/
+└─ scripts/</div>
+      </div>
+      <div class="package-cards">
+        <div class="package-card hot">
+          <div class="package-card-title">SKILL.md（必有）</div>
+          <div class="package-card-body">Skill 的入口说明：触发场景、工作流程、输出格式和验收标准。</div>
+          <div class="package-card-list">适合放：name、description、核心步骤、禁区和检查要求。</div>
+        </div>
+        <div class="package-card hot">
+          <div class="package-card-title">references（可有）</div>
+          <div class="package-card-body">给 AI 读的说明书：规范、口径、案例、检查清单。</div>
+          <div class="package-card-list">适合放：版式库、业务规则、评分口径、示例说明。</div>
+        </div>
+        <div class="package-card hot">
+          <div class="package-card-title">assets（可有）</div>
+          <div class="package-card-body">给 AI 使用的素材或底稿：模板、图片、Logo、字体、样例文件。</div>
+          <div class="package-card-list">适合放：PPT 模板、Word 模板、品牌素材、可复用图片。</div>
+        </div>
+        <div class="package-card hot">
+          <div class="package-card-title">scripts（可有）</div>
+          <div class="package-card-body">给 AI 调用的自动化动作：校验、转换、批处理、尺寸检查。</div>
+          <div class="package-card-list">适合放：validate、render、export、clean 等重复命令。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Skill Anatomy</span></div>
+</section>
+
+<section class="slide" data-layout="V10">
+  <header class="slide-head">
+    <div><div class="slide-kicker">SKILL.MD</div><h1 class="slide-title">SKILL.md 必须写清楚什么？</h1></div>
+    <div class="slide-meta">07 / 13</div>
+  </header>
+  <div class="content skillmd-layout">
+    <div class="skillmd-shot fit-contain" data-anim>
+      <img src="images/06-skill-md-example.png" alt="SKILL.md 示例截图">
+      <span class="shot-marker m1">1</span>
+      <span class="shot-marker m2">2</span>
+      <span class="shot-marker m3">3</span>
+    </div>
+    <div class="skillmd-notes" data-anim>
+      <article class="skillmd-note">
+        <div class="skillmd-note-num">1</div>
+        <div><div class="skillmd-note-title">name</div><div class="skillmd-note-body">一句话标识这个 Skill，短、清楚、方便 AI 和人快速识别。</div></div>
+      </article>
+      <article class="skillmd-note">
+        <div class="skillmd-note-num">2</div>
+        <div><div class="skillmd-note-title">description</div><div class="skillmd-note-body">写清适用场景，让 AI 判断什么时候该用、什么时候不该用。</div></div>
+      </article>
+      <article class="skillmd-note">
+        <div class="skillmd-note-num">3</div>
+        <div><div class="skillmd-note-title">核心步骤</div><div class="skillmd-note-body">把主流程写成可执行步骤，说明输入、处理方式和输出要求。</div></div>
+      </article>
+    </div>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>SKILL.md Essentials</span></div>
+</section>
+
+<section class="slide" data-layout="V06">
+  <header class="slide-head">
+    <div><div class="slide-kicker">PROGRESSIVE DISCLOSURE</div><h1 class="slide-title">渐进式披露：按需加载资源</h1></div>
+    <div class="slide-meta">08 / 13</div>
+  </header>
+  <div class="content disclosure-layout">
+    <div class="disclosure-shot fit-contain" data-anim>
+      <img src="images/07-progressive-disclosure.png" alt="按需加载 reference 示例截图">
+      <div class="resource-box refs" aria-hidden="true"></div>
+      <div class="resource-box table" aria-hidden="true"></div>
+      <div class="resource-label">按需加载资源</div>
+    </div>
+    <div class="disclosure-notes" data-anim>
+      <article class="disclosure-note">
+        <span class="icon-badge"><i class="hgi-stroke hgi-task-01"></i></span>
+        <div><div class="disclosure-note-title">先读主流程</div><div class="disclosure-note-body">SKILL.md 先说明任务流程和判断规则，让 AI 知道当前任务应该怎么走。</div></div>
+      </article>
+      <article class="disclosure-note">
+        <span class="icon-badge"><i class="hgi-stroke hgi-folder-01"></i></span>
+        <div><div class="disclosure-note-title">再按场景选资料</div><div class="disclosure-note-body">只在需要某个 Step 或场景时，打开对应 reference 文件。</div></div>
+      </article>
+      <article class="disclosure-note">
+        <span class="icon-badge"><i class="hgi-stroke hgi-target-02"></i></span>
+        <div><div class="disclosure-note-title">降低干扰，提升稳定性</div><div class="disclosure-note-body">避免资料一次性塞满上下文，让 AI 聚焦当前问题和必要规则。</div></div>
+      </article>
+    </div>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Progressive Disclosure</span></div>
+</section>
+
+<section class="slide" data-layout="V09">
+  <header class="slide-head">
+    <div><div class="slide-kicker">CHECKLIST</div><h1 class="slide-title">生成前必须问清的四类输入</h1></div>
+    <div class="slide-meta">09 / 13</div>
+  </header>
+  <div class="content matrix" data-anim>
+    <div class="matrix-head">输入维度</div><div class="matrix-head">需要问清什么</div><div class="matrix-head">影响什么</div>
+    <div class="matrix-key">用户目标</div><div>用户最终要交付什么，听众是谁，时间和质量要求是什么。</div><div>决定 Skill 的输出口径与文字密度。</div>
+    <div class="matrix-key">任务边界</div><div>哪些场景适用，哪些场景应该拒绝、澄清或切换方法。</div><div>决定触发条件与禁区说明。</div>
+    <div class="matrix-key">可复用资产</div><div>是否已有模板、脚本、参考案例、设计规范、历史样例。</div><div>决定 assets、references 和 scripts 的组织方式。</div>
+    <div class="matrix-key">验收标准</div><div>如何判断完成：命令通过、截图合格、格式正确、内容无占位。</div><div>决定最终检查清单和自动化验证。</div>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Input Checklist</span></div>
+</section>
+
+<section class="slide" data-layout="V16">
+  <header class="slide-head">
+    <div><div class="slide-kicker">CREATE</div><h1 class="slide-title">三种创建方式：从手搓到平台化</h1></div>
+    <div class="slide-meta">10 / 13</div>
+  </header>
+  <div class="content grid-3">
+    <article class="compare-card create-card" data-anim>
+      <div class="create-head"><span class="icon-badge"><i class="hgi-stroke hgi-edit-02"></i></span><span class="compare-label">Manual <span class="tag-note">/ 学习原理优先</span></span></div>
+      <div class="touch-title">自己手搓</div>
+      <div class="compare-copy">
+        <div class="io-head">适合</div>想理解基本结构，或做一个轻量 Skill。
+        <div class="pros-cons">
+          <div class="pros"><div class="pros-title">优点</div><ul><li>学习成本可控</li><li>结构透明</li></ul></div>
+          <div class="cons"><div class="cons-title">注意</div><ul><li>容易漏触发条件</li><li>流程不够完整</li></ul></div>
+        </div>
+      </div>
+    </article>
+    <article class="compare-card create-card" data-anim>
+      <div class="create-head"><span class="icon-badge"><i class="hgi-stroke hgi-magic-wand-01"></i></span><span class="compare-label after">Builder <span class="tag-note">/ 大多数场景推荐</span></span></div>
+      <div class="touch-title">借助 skill-builder</div>
+      <div class="compare-copy">
+        <div class="io-head">适合</div>已有素材，但不知道如何拆成 SKILL.md、references、assets、scripts。
+        <div class="pros-cons">
+          <div class="pros"><div class="pros-title">优点</div><ul><li>会追问需求</li><li>能生成初稿</li></ul></div>
+          <div class="cons"><div class="cons-title">注意</div><ul><li>仍需真实任务验证</li><li>不要完全免审</li></ul></div>
+        </div>
+      </div>
+    </article>
+    <article class="compare-card create-card" data-anim>
+      <div class="create-head"><span class="icon-badge"><i class="hgi-stroke hgi-store-04"></i></span><span class="compare-label after">Valet <span class="tag-note">/ 内部落地推荐</span></span></div>
+      <div class="touch-title">在 Valet 中安装使用</div>
+      <div class="compare-copy">
+        <div class="io-head">适合</div>希望快速试用、分发和维护团队可复用 Skill。
+        <div class="pros-cons">
+          <div class="pros"><div class="pros-title">优点</div><ul><li>开箱即用</li><li>方便团队共享</li></ul></div>
+          <div class="cons"><div class="cons-title">注意</div><ul><li>版本说明要清楚</li><li>迭代记录要可追踪</li></ul></div>
+        </div>
+      </div>
+    </article>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Create Options</span></div>
+</section>
+
+<section class="slide" data-layout="V09">
+  <header class="slide-head">
+    <div><div class="slide-kicker">USE</div><h1 class="slide-title">使用 Skill 后，要复盘它是否真的变稳</h1></div>
+    <div class="slide-meta">11 / 13</div>
+  </header>
+  <div class="content matrix" data-anim>
+    <div class="matrix-head">阶段</div><div class="matrix-head">检查问题</div><div class="matrix-head">优化方向</div>
+    <div class="matrix-key">创建前</div><div>这个任务是否反复出现？是否有稳定流程？是否需要模板、知识或脚本？</div><div>优先选择高频、边界清楚、有样例的场景。</div>
+    <div class="matrix-key">编写时</div><div>name 是否短、description 是否写清触发、SKILL.md 是否只保留核心流程？</div><div>详细规则拆到 references，模板素材拆到 assets，重复动作拆到 scripts。</div>
+    <div class="matrix-key">使用时</div><div>它是自然触发、明确点名，还是与其他 Skill 组合完成复杂任务？</div><div>观察触发是否准确，必要时补充关键词和不适用场景。</div>
+    <div class="matrix-key">复盘时</div><div>输出是否比不用 Skill 更稳定？哪一步让 AI 误解？哪些资料应该补充？</div><div>把失败案例写回流程、禁区、样例或校验清单。</div>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Use & Review</span></div>
+</section>
+
+<section class="slide" data-layout="V03">
+  <header class="slide-head">
+    <div><div class="slide-kicker">PRACTICE</div><h1 class="slide-title">课堂小作业：8 张 Skill 任务卡</h1></div>
+    <div class="slide-meta">12 / 13</div>
+  </header>
+  <div class="content homework-grid">
+    <article class="homework-card" data-anim>
+      <div class="homework-index">CARD 01</div>
+      <div class="homework-title">需求澄清官</div>
+      <div class="homework-skill">requirement-clarifier</div>
+      <div class="homework-body">
+        <div class="homework-field"><span class="homework-label">任务</span><span class="homework-value">把模糊需求拆成追问问题。</span></div>
+        <div class="homework-field"><span class="homework-label">输出</span><span class="homework-value">目标 / 关键问题 / 风险点。</span></div>
+        <div class="homework-field"><span class="homework-label">测试输入</span><span class="homework-value">我们想做一个会员成长体系。</span></div>
+        <div class="homework-field"><span class="homework-label">通关</span><span class="homework-value">不少于 6 个问题，只提问不直接给方案。</span></div>
+      </div>
+    </article>
+    <article class="homework-card" data-anim>
+      <div class="homework-index">CARD 02</div>
+      <div class="homework-title">空状态文案师</div>
+      <div class="homework-skill">empty-state-copy</div>
+      <div class="homework-body">
+        <div class="homework-field"><span class="homework-label">任务</span><span class="homework-value">生成产品空状态文案。</span></div>
+        <div class="homework-field"><span class="homework-label">输出</span><span class="homework-value">标题 / 说明 / 主按钮 / 次按钮。</span></div>
+        <div class="homework-field"><span class="homework-label">测试输入</span><span class="homework-value">搜索商品没有结果。</span></div>
+        <div class="homework-field"><span class="homework-label">通关</span><span class="homework-value">标题不超 12 字，文案自然，引导下一步。</span></div>
+      </div>
+    </article>
+    <article class="homework-card" data-anim>
+      <div class="homework-index">CARD 03</div>
+      <div class="homework-title">周报润色器</div>
+      <div class="homework-skill">weekly-report-polisher</div>
+      <div class="homework-body">
+        <div class="homework-field"><span class="homework-label">任务</span><span class="homework-value">把流水账整理成结果导向周报。</span></div>
+        <div class="homework-field"><span class="homework-label">输出</span><span class="homework-value">成果 / 进行中 / 风险阻塞 / 下周计划。</span></div>
+        <div class="homework-field"><span class="homework-label">测试输入</span><span class="homework-value">跟首页改版、开会、看竞品，埋点未定。</span></div>
+        <div class="homework-field"><span class="homework-label">通关</span><span class="homework-value">不编数据，能识别埋点未定风险。</span></div>
+      </div>
+    </article>
+    <article class="homework-card" data-anim>
+      <div class="homework-index">CARD 04</div>
+      <div class="homework-title">用户反馈翻译器</div>
+      <div class="homework-skill">feedback-translator</div>
+      <div class="homework-body">
+        <div class="homework-field"><span class="homework-label">任务</span><span class="homework-value">把用户吐槽翻译成产品问题。</span></div>
+        <div class="homework-field"><span class="homework-label">输出</span><span class="homework-value">原意 / 可能问题 / 影响范围 / 建议验证。</span></div>
+        <div class="homework-field"><span class="homework-label">测试输入</span><span class="homework-value">这个页面太烦了，找订单要点半天。</span></div>
+        <div class="homework-field"><span class="homework-label">通关</span><span class="homework-value">区分事实和推测，验证方法可操作。</span></div>
+      </div>
+    </article>
+    <article class="homework-card" data-anim>
+      <div class="homework-index">CARD 05</div>
+      <div class="homework-title">竞品拆解助手</div>
+      <div class="homework-skill">competitor-breakdown</div>
+      <div class="homework-body">
+        <div class="homework-field"><span class="homework-label">任务</span><span class="homework-value">根据竞品页面描述拆解可借鉴点。</span></div>
+        <div class="homework-field"><span class="homework-label">输出</span><span class="homework-value">结构 / 亮点 / 可借鉴 / 不建议照搬。</span></div>
+        <div class="homework-field"><span class="homework-label">测试输入</span><span class="homework-value">会员页含会员卡、积分任务、权益和进度条。</span></div>
+        <div class="homework-field"><span class="homework-label">通关</span><span class="homework-value">借鉴点有适用条件，照搬风险不少于 2 条。</span></div>
+      </div>
+    </article>
+    <article class="homework-card" data-anim>
+      <div class="homework-index">CARD 06</div>
+      <div class="homework-title">多角色翻译机</div>
+      <div class="homework-skill">role-translator</div>
+      <div class="homework-body">
+        <div class="homework-field"><span class="homework-label">任务</span><span class="homework-value">把同一需求翻译给不同角色。</span></div>
+        <div class="homework-field"><span class="homework-label">输出</span><span class="homework-value">给产品 / 设计 / 研发 / 测试。</span></div>
+        <div class="homework-field"><span class="homework-label">测试输入</span><span class="homework-value">订单列表里可以快速申请售后。</span></div>
+        <div class="homework-field"><span class="homework-label">通关</span><span class="homework-value">角色关注点不同，且不改变原需求。</span></div>
+      </div>
+    </article>
+    <article class="homework-card" data-anim>
+      <div class="homework-index">CARD 07</div>
+      <div class="homework-title">复盘提纲生成器</div>
+      <div class="homework-skill">retro-outline</div>
+      <div class="homework-body">
+        <div class="homework-field"><span class="homework-label">任务</span><span class="homework-value">把项目描述整理成复盘提纲。</span></div>
+        <div class="homework-field"><span class="homework-label">输出</span><span class="homework-value">目标 / 结果 / 做得好的 / 问题 / 下次改进。</span></div>
+        <div class="homework-field"><span class="homework-label">测试输入</span><span class="homework-value">活动效果一般，社群通知，页面赶，未测试。</span></div>
+        <div class="homework-field"><span class="homework-label">通关</span><span class="homework-value">不美化失败，没有数据就写缺少数据。</span></div>
+      </div>
+    </article>
+    <article class="homework-card" data-anim>
+      <div class="homework-index">CARD 08</div>
+      <div class="homework-title">提示词修理工</div>
+      <div class="homework-skill">prompt-fixer</div>
+      <div class="homework-body">
+        <div class="homework-field"><span class="homework-label">任务</span><span class="homework-value">把模糊提示词改成可执行提示词。</span></div>
+        <div class="homework-field"><span class="homework-label">输出</span><span class="homework-value">原问题 / 改写后提示词 / 改写理由。</span></div>
+        <div class="homework-field"><span class="homework-label">测试输入</span><span class="homework-value">帮我写个活动方案。</span></div>
+        <div class="homework-field"><span class="homework-label">通关</span><span class="homework-value">包含角色、任务、约束、输出格式。</span></div>
+      </div>
+    </article>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Class Practice</span></div>
+</section>
+
+<section class="slide" data-layout="V05">
+  <header class="slide-head">
+    <div><div class="slide-kicker">NEXT SHARE</div><h1 class="slide-title">下一期预告：AI生成可交互demo</h1></div>
+    <div class="slide-meta">13 / 13</div>
+  </header>
+  <div class="content teaser-layout">
+    <div class="demo-frame" data-anim>
+      <div class="demo-frame-bar"><span class="demo-dot"></span>https://newcomer-poster-generator.netlify.app/</div>
+      <iframe src="https://newcomer-poster-generator.netlify.app/" title="AI生成可交互demo" loading="lazy"></iframe>
+    </div>
+    <aside class="qr-panel" data-anim>
+      <div class="qr-knowledge">
+        <div class="qr-knowledge-label">可学到知识点</div>
+        <div class="qr-knowledge-list">
+          <div class="qr-knowledge-item">设计规范工程化</div>
+          <div class="qr-knowledge-item">前端还原</div>
+          <div class="qr-knowledge-item">部署上线</div>
+        </div>
+      </div>
+      <img src="images/14-demo-qr.png" alt="AI生成可交互demo 体验二维码">
+      <div class="qr-title">扫码体验</div>
+      <div class="qr-link">newcomer-poster-generator.netlify.app</div>
+    </aside>
+  </div>
+  <div class="footnote"><span>Vipshop Internal Report</span><span>Interactive Demo</span></div>
+</section>
+
+</main>
+<nav id="nav" aria-label="Slides"></nav>
+<div id="hint">← → / ESC INDEX</div>
+<div id="index" aria-label="Slide index"></div>
+<script type="module">
+  const deck = document.querySelector("#deck");
+  const slides = [...document.querySelectorAll(".slide")];
+  const nav = document.querySelector("#nav");
+  const index = document.querySelector("#index");
+  let current = 0;
+  let locked = false;
+
+  deck.style.width = `${Math.max(slides.length, 1) * 100}vw`;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+    dot.addEventListener("click", () => go(i));
+    nav.appendChild(dot);
+  });
+
+  slides.forEach((slide, i) => {
+    const thumb = document.createElement("button");
+    thumb.type = "button";
+    thumb.className = "thumb";
+    thumb.setAttribute("aria-label", `Open slide ${i + 1}`);
+    const mini = document.createElement("div");
+    mini.className = "mini";
+    mini.appendChild(slide.cloneNode(true));
+    thumb.appendChild(mini);
+    thumb.addEventListener("click", () => {
+      index.classList.remove("show");
+      go(i);
+    });
+    index.appendChild(thumb);
+  });
+
+  async function animateSlide(slide){
+    const items = [...slide.querySelectorAll("[data-anim]")];
+    if (!items.length || document.body.classList.contains("no-motion")) {
+      items.forEach(el => { el.style.opacity = 1; el.style.transform = "none"; });
+      return;
+    }
+    let motion = globalThis.Motion;
+    if (!motion) {
+      try { motion = await import("./assets/motion.min.js"); }
+      catch { motion = null; }
+    }
+    if (!motion?.animate) {
+      items.forEach(el => { el.style.opacity = 1; el.style.transform = "none"; });
+      return;
+    }
+    items.forEach(el => { el.style.opacity = 0; el.style.transform = "translateY(14px)"; });
+    items.forEach((el, i) => {
+      motion.animate(el, { opacity:[0,1], transform:["translateY(14px)","translateY(0px)"] }, { duration:.42, delay:i*.055, easing:"ease-out", fill:"forwards" });
+    });
+  }
+
+  function go(next){
+    current = Math.max(0, Math.min(slides.length - 1, next));
+    deck.style.transform = `translate3d(${-current * 100}vw,0,0)`;
+    [...nav.children].forEach((dot, i) => dot.classList.toggle("active", i === current));
+    animateSlide(slides[current]);
+  }
+
+  function step(delta){
+    if (locked) return;
+    locked = true;
+    go(current + delta);
+    setTimeout(() => locked = false, 420);
+  }
+
+  window.addEventListener("keydown", e => {
+    if (e.key === "Escape") index.classList.toggle("show");
+    if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") step(1);
+    if (e.key === "ArrowLeft" || e.key === "PageUp") step(-1);
+    if (e.key.toLowerCase() === "b") document.body.classList.toggle("no-motion");
+  });
+  window.addEventListener("wheel", e => {
+    if (Math.abs(e.deltaX) + Math.abs(e.deltaY) < 18) return;
+    step(e.deltaY > 0 || e.deltaX > 0 ? 1 : -1);
+  }, { passive:true });
+
+  let sx = 0;
+  window.addEventListener("touchstart", e => sx = e.touches[0].clientX, { passive:true });
+  window.addEventListener("touchend", e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
+  }, { passive:true });
+
+  go(0);
+</script>
+</body>
+</html>
